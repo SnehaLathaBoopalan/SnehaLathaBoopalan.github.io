@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unapologetically Typed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Caveat:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:       #F7F2E8;
+      --cream-mid:   #EDE5D3;
+      --cream-dark:  #E2D9C5;
+      --ink:         #1C1409;
+      --ink-soft:    #3E2F1E;
+      --brown:       #7B5C3B;
+      --terracotta:  #BC6A38;
+      --muted:       #9E8C79;
+      --border:      #D0C4B0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background-color: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ─── PAPER TEXTURE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ─────────────────────────────────────
+       NAVIGATION
+    ───────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(247, 242, 232, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: 'Caveat', cursive;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Caveat', cursive;
+      font-size: 1.1rem;
+      color: var(--muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background: var(--terracotta);
+      transition: width 0.25s ease;
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a.active::after { width: 100%; }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--ink); }
+
+    /* ─────────────────────────────────────
+       PAGE SWITCHING
+    ───────────────────────────────────── */
+    .page { display: none; animation: none; }
+    .page.active { display: block; animation: fadeUp 0.45s ease both; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─────────────────────────────────────
+       HOME — HERO
+    ───────────────────────────────────── */
+    .hero {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 5.5rem 3rem 3.5rem;
+      display: grid;
+      grid-template-columns: 1fr 160px;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.2rem, 8vw, 6.5rem);
+      font-weight: 300;
+      line-height: 0.92;
+      letter-spacing: -0.035em;
+      color: var(--ink);
+      margin-bottom: 1.6rem;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--brown);
+    }
+
+    .hero-tagline {
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--muted);
+      padding-left: 1.1rem;
+      border-left: 2.5px solid var(--terracotta);
+      line-height: 1.5;
+    }
+
+    .hero-avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 2.5px solid var(--border);
+      overflow: hidden;
+      background: var(--cream-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 0.3s;
+    }
+
+    .hero-avatar:hover { border-color: var(--terracotta); }
+
+    .avatar-placeholder {
+      width: 78px;
+      height: 78px;
+      opacity: 0.35;
+    }
+
+    /* ─────────────────────────────────────
+       HOME — FEATURED POST
+    ───────────────────────────────────── */
+    .featured-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 3rem 4rem;
+    }
+
+    .section-eyebrow {
+      font-family: 'Caveat', cursive;
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+
+    .featured-card {
+      border-top: 2px solid var(--ink);
+      padding-top: 2.2rem;
+      cursor: pointer;
+    }
+
+    .featured-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 1.2rem;
+      transition: color 0.2s;
+      max-width: 700px;
+    }
+
+    .featured-card:hover .featured-title { color: var(--brown); }
+
+    .featured-excerpt {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--ink-soft);
+      max-width: 620px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ─────────────────────────────────────
+       POST META (shared)
+    ───────────────────────────────────── */
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .post-date {
+      font-family: 'Caveat', cursive;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .emotion-tag {
+      font-family: 'Caveat', cursive;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.18rem 0.75rem;
+      border-radius: 20px;
+      letter-spacing: 0.03em;
+      display: inline-block;
+    }
+
+    .tag-exhausted { background: #E4EEF4; color: #3F7292; }
+    .tag-restless  { background: #EEE8F5; color: #6E4F92; }
+    .tag-angry     { background: #F5ECE5; color: #9C441A; }
+    .tag-grateful  { background: #E8F2E8; color: #3E7A3E; }
+    .tag-anxious   { background: #F5F0E3; color: #876C28; }
+    .tag-sad       { background: #E5EBF5; color: #3A5278; }
+    .tag-hopeful   { background: #F2EDE5; color: #7A5E30; }
+    .tag-numb      { background: #EEECEA; color: #5E5650; }
+
+    /* ─────────────────────────────────────
+       HOME — RECENT POSTS GRID
+    ───────────────────────────────────── */
+    .recent-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 3rem 5rem;
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--border);
+    }
+
+    .post-card-sm {
+      padding: 2rem 2rem 2rem 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s, padding-left 0.2s;
+    }
+
+    .post-card-sm:nth-child(even) {
+      padding-left: 2rem;
+      padding-right: 0;
+      border-left: 1px solid var(--border);
+    }
+
+    .post-card-sm:hover {
+      background: var(--cream-mid);
+      padding-left: 0.8rem;
+    }
+
+    .post-card-sm:nth-child(even):hover {
+      padding-left: 2.8rem;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.55rem;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 0.7rem;
+      transition: color 0.2s;
+    }
+
+    .post-card-sm:hover .card-title { color: var(--brown); }
+
+    .card-excerpt {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    /* ─────────────────────────────────────
+       ABOUT PAGE
+    ───────────────────────────────────── */
+    .about-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 5.5rem 3rem 6rem;
+    }
+
+    .page-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.035em;
+      color: var(--ink);
+      margin-bottom: 3rem;
+    }
+
+    .page-heading em {
+      font-style: italic;
+      color: var(--brown);
+    }
+
+    .about-avatar {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      border: 2.5px solid var(--border);
+      overflow: hidden;
+      background: var(--cream-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+
+    .about-body {
+      font-size: 1.1rem;
+      line-height: 1.95;
+      color: var(--ink-soft);
+    }
+
+    .about-body p + p { margin-top: 1.6rem; }
+
+    .handwritten-pull {
+      font-family: 'Caveat', cursive;
+      font-size: 1.45rem;
+      color: var(--brown);
+      display: block;
+      margin: 2.2rem 0;
+      border-left: 2.5px solid var(--terracotta);
+      padding-left: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* ─────────────────────────────────────
+       ARCHIVE PAGE
+    ───────────────────────────────────── */
+    .archive-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 5.5rem 3rem 6rem;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+      margin-bottom: 3.2rem;
+    }
+
+    .filter-btn {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.28rem 1rem;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover { border-color: var(--brown); color: var(--brown); }
+    .filter-btn.active { border-color: var(--ink); color: var(--ink); background: var(--cream-dark); }
+
+    .archive-list { list-style: none; }
+
+    .archive-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1.5rem;
+      align-items: start;
+      border-top: 1px solid var(--border);
+      padding: 1.6rem 0;
+      cursor: pointer;
+      transition: padding-left 0.2s;
+    }
+
+    .archive-item:last-child { border-bottom: 1px solid var(--border); }
+    .archive-item:hover { padding-left: 0.6rem; }
+
+    .archive-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.65rem;
+      font-weight: 500;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 0.35rem;
+      transition: color 0.2s;
+    }
+
+    .archive-item:hover .archive-title { color: var(--brown); }
+
+    .archive-excerpt {
+      font-size: 0.87rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .archive-right {
+      text-align: right;
+      flex-shrink: 0;
+      padding-top: 0.2rem;
+    }
+
+    .archive-right .post-date { display: block; margin-bottom: 0.4rem; }
+
+    /* ─────────────────────────────────────
+       SINGLE POST PAGE
+    ───────────────────────────────────── */
+    .post-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4rem 3rem 7rem;
+    }
+
+    .post-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 3rem;
+      transition: color 0.2s;
+    }
+
+    .post-back:hover { color: var(--ink); }
+
+    .post-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 600;
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 1.6rem;
+    }
+
+    .post-meta-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding-bottom: 2.2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .post-body {
+      font-size: 1.12rem;
+      line-height: 1.95;
+      color: var(--ink-soft);
+    }
+
+    .post-body p + p { margin-top: 1.6rem; }
+    .post-body em { font-style: italic; }
+
+    /* ─────────────────────────────────────
+       DIVIDER
+    ───────────────────────────────────── */
+    .full-divider {
+      max-width: 960px;
+      margin: 0 auto 0;
+      padding: 0 3rem;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────── */
+    footer {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    .footer-brand {
+      font-family: 'Caveat', cursive;
+      font-size: 1.05rem;
+      color: var(--muted);
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 1.4rem;
+    }
+
+    .footer-socials a {
+      font-family: 'Caveat', cursive;
+      font-size: 0.95rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-socials a:hover { color: var(--ink); }
+
+    /* ─────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────── */
+    @media (max-width: 680px) {
+      nav { padding: 1rem 1.4rem; }
+      .nav-links { gap: 1.4rem; }
+      .hero { grid-template-columns: 1fr; padding: 3.5rem 1.4rem 2.5rem; }
+      .hero-avatar { display: none; }
+      .featured-wrap, .recent-wrap { padding: 0 1.4rem 3rem; }
+      .posts-grid { grid-template-columns: 1fr; }
+      .post-card-sm:nth-child(even) { padding-left: 0; border-left: none; }
+      .post-card-sm:nth-child(even):hover { padding-left: 0.8rem; }
+      .about-wrap, .archive-wrap, .post-wrap { padding: 3.5rem 1.4rem 4rem; }
+      footer { flex-direction: column; gap: 1.2rem; text-align: center; padding: 2rem 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     NAVIGATION
+══════════════════════════════ -->
+<nav>
+  <span class="nav-logo" onclick="navigate('home')">Unapologetically Typed</span>
+  <ul class="nav-links">
+    <li><a onclick="navigate('home')" data-page="home">home</a></li>
+    <li><a onclick="navigate('about')" data-page="about">about</a></li>
+    <li><a onclick="navigate('archive')" data-page="archive">archive</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════
+     HOME PAGE
+══════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div>
+      <h1 class="hero-title">Unapologetically<br><em>Typed</em></h1>
+      <p class="hero-tagline">i write it down so i don't swallow it whole.</p>
+    </div>
+    <div class="hero-avatar">
+      <!--
+        TO ADD YOUR PHOTO:
+        Replace everything inside this div with:
+        <img src="your-photo.jpg" alt="me" style="width:100%;height:100%;object-fit:cover;">
+      -->
+      <svg class="avatar-placeholder" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="28" r="16" fill="#9E8C79"/>
+        <ellipse cx="40" cy="68" rx="24" ry="16" fill="#9E8C79"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Featured Post -->
+  <div class="featured-wrap">
+    <p class="section-eyebrow">latest entry</p>
+    <div class="featured-card" onclick="openPost(0)">
+      <h2 class="featured-title" id="feat-title"></h2>
+      <p class="featured-excerpt" id="feat-excerpt"></p>
+      <div class="post-meta">
+        <span class="post-date" id="feat-date"></span>
+        <span class="emotion-tag" id="feat-tag"></span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="full-divider">
+
+  <!-- Recent Posts -->
+  <div class="recent-wrap" style="padding-top:2.5rem">
+    <p class="section-eyebrow">recent entries</p>
+    <div class="posts-grid" id="home-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ABOUT PAGE
+══════════════════════════════ -->
+<div id="page-about" class="page">
+  <div class="about-wrap">
+    <h1 class="page-heading">about<br><em>me.</em></h1>
+    <div class="about-avatar">
+      <!--
+        TO ADD YOUR PHOTO:
+        Replace everything inside this div with:
+        <img src="your-photo.jpg" alt="me" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+      -->
+      <svg class="avatar-placeholder" style="width:100px;height:100px;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="28" r="16" fill="#9E8C79"/>
+        <ellipse cx="40" cy="68" rx="24" ry="16" fill="#9E8C79"/>
+      </svg>
+    </div>
+    <div class="about-body">
+      <!--
+        EDIT THIS SECTION — write whatever you want people to know about you.
+        Keep it as honest as your entries.
+      -->
+      <p>Hi. I'm the person behind the words here. I started this journal because I got tired of keeping things inside — of nodding along and saying "I'm fine" when I wasn't, of letting feelings dissolve unacknowledged into the day.</p>
+      <span class="handwritten-pull">"So I typed them instead."</span>
+      <p>This isn't curated. It isn't aesthetic. It's just honest — sometimes uncomfortably so. I write about what makes me feel too much, what makes me feel nothing at all, and everything in between.</p>
+      <p>If something you read here feels familiar, know that you're not alone in it. That's the whole point.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ARCHIVE PAGE
+══════════════════════════════ -->
+<div id="page-archive" class="page">
+  <div class="archive-wrap">
+    <h1 class="page-heading">all<br><em>entries.</em></h1>
+    <div class="filter-bar" id="filter-bar"></div>
+    <ul class="archive-list" id="archive-list"></ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SINGLE POST PAGE
+══════════════════════════════ -->
+<div id="page-post" class="page">
+  <div class="post-wrap">
+    <span class="post-back" id="post-back-btn" onclick="navigate('home')">← back</span>
+    <h1 class="post-headline" id="post-title"></h1>
+    <div class="post-meta-bar">
+      <span class="post-date" id="post-date"></span>
+      <span class="emotion-tag" id="post-tag"></span>
+    </div>
+    <div class="post-body" id="post-body"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     FOOTER
+══════════════════════════════ -->
+<footer>
+  <span class="footer-brand">Unapologetically Typed</span>
+  <div class="footer-socials">
+    <!--
+      Replace the href="#" values with your actual social profile URLs.
+      e.g. href="https://instagram.com/yourusername"
+    -->
+    <a href="#" target="_blank" rel="noopener noreferrer">instagram</a>
+    <a href="#" target="_blank" rel="noopener noreferrer">linkedin</a>
+    <a href="#" target="_blank" rel="noopener noreferrer">twitter</a>
+  </div>
+</footer>
+
+<script>
+  // ══════════════════════════════════════════════════════════
+  //  YOUR POSTS
+  //
+  //  To add a new entry, copy one post object and paste it
+  //  at the TOP of this array (newest first).
+  //
+  //  Fields:
+  //    title   — the big headline
+  //    emotion — one word: angry / anxious / grateful / sad /
+  //              exhausted / restless / hopeful / numb / (or anything)
+  //    date    — e.g. "May 25, 2025"
+  //    time    — e.g. "11:47 PM"
+  //    excerpt — 1–2 sentences shown in previews
+  //    body    — full post content wrapped in <p> tags
+  // ══════════════════════════════════════════════════════════
+  const posts = [
+    {
+      title: "I Don't Know What I'm Doing and That's Fine (It's Not Fine)",
+      emotion: "anxious",
+      date: "May 23, 2025",
+      time: "11:47 PM",
+      excerpt: "Everyone around me seems to have a map. A five-year plan. A trajectory that makes sense. And I'm just here, trying to find the door.",
+      body: `<p>Everyone around me seems to have a map. A five-year plan. A trajectory that makes sense when you say it out loud at family dinners. And I'm just here, trying to find the door to the room everyone else already seems to be standing in.</p>
+             <p>I've been told that uncertainty is exciting. That not knowing is where all the possibility lives. I've read the quotes. I've nodded at the right moments. But when it's 11pm and I'm spiraling through a browser history of half-researched careers and half-abandoned interests, it feels less like possibility and more like quicksand.</p>
+             <p>What I'm learning — slowly, reluctantly — is that "figuring it out" is not a phase that ends. It's just the thing. The ongoing, inconclusive, deeply uncomfortable thing. And maybe the people who look like they have a map are just better at folding it so the messy parts don't show.</p>
+             <p>Tonight I'm letting myself not know. Not because it's peaceful. Because it's real.</p>`
+    },
+    {
+      title: "The Weight of Being Okay",
+      emotion: "exhausted",
+      date: "May 18, 2025",
+      time: "9:12 PM",
+      excerpt: "I've gotten so good at saying 'I'm fine' that some days I almost believe it. But tonight the performance is exhausting me.",
+      body: `<p>There's a specific tiredness that comes not from doing too much but from performing too well. From keeping your voice level when something inside you is anything but. From smiling at the right moments and saying "no really, I'm okay" with such conviction that the other person stops asking.</p>
+             <p>I've gotten good at it. Too good, maybe. Some days I almost believe it myself. The okay-ness becomes a costume I wear so often I forget what's underneath.</p>
+             <p>Tonight the costume is heavy. Tonight the weight of being okay is more than the weight of not being okay ever was. And I don't know what to do with that except write it down and remind myself that this is what honest feels like — inconvenient, raw, and way overdue.</p>
+             <p>I'm not okay. I'm tired. That's the whole entry.</p>`
+    },
+    {
+      title: "When Anger Feels Like Clarity",
+      emotion: "angry",
+      date: "May 12, 2025",
+      time: "7:33 PM",
+      excerpt: "Nobody talks about how clean anger can feel sometimes. How it strips away the noise and leaves something clear in its place.",
+      body: `<p>I've been taught my whole life to apologize for anger. To soften it. To say "I'm upset" instead of "I'm furious." To trail off at the end of a sentence so it sounds more like a question than an accusation.</p>
+             <p>But today anger felt like a scalpel. It cut through all the second-guessing and the "maybe I'm overreacting" and the "let me see their side." It was just: no. This is wrong. I know it is. Full stop.</p>
+             <p>Nobody talks about how clean that is. How clarifying. How anger, when it's legitimate — and sometimes it is — isn't something to manage away but to listen to. It's information. It's the body and mind saying this crossed a line I didn't even know I had drawn.</p>
+             <p>I'm still angry. I'm also grateful for it. Those two things can be true.</p>`
+    },
+    {
+      title: "3am and I'm Still Here",
+      emotion: "restless",
+      date: "May 5, 2025",
+      time: "3:14 AM",
+      excerpt: "There's a specific quality to 3am thoughts. They're not more true. They're just unguarded. No filter. No audience. Just whatever your brain wants to say.",
+      body: `<p>There's a specific quality to 3am thoughts. They're not more true than daytime thoughts — I know that. But they're unguarded. No filter, no audience, no version of you that's trying to be reasonable.</p>
+             <p>At 3am I think about: things I said five years ago that still make me cringe. Whether the relationships I've let quietly go actually mattered to the other person or if they didn't notice. What I actually want, stripped of everything I've been told I should want. Whether I'm living in the right city. The right life.</p>
+             <p>I'm not spiraling. It doesn't feel like anxiety tonight. It feels like honesty without the social filter on. Like my brain finally got a moment alone and decided to have the conversation it's been waiting to have.</p>
+             <p>I'll sleep eventually. But right now I'm just here, awake, sitting with it. That feels like enough.</p>`
+    },
+    {
+      title: "Soft Days",
+      emotion: "grateful",
+      date: "April 28, 2025",
+      time: "6:45 PM",
+      excerpt: "Today was nothing and it was everything. Coffee while it was still hot. Sun in a corner. No urgency anywhere. I want to write this down before I forget it.",
+      body: `<p>Today was a soft day. Nothing happened, and everything did.</p>
+             <p>Coffee while it was still hot. Actual sunlight in the corner of the room at 4pm. A conversation that went long because neither of us wanted it to end. No alarm scheduled for tomorrow that I'm dreading yet.</p>
+             <p>I don't write about the good days often enough. The hard ones feel urgent — like they demand to be documented. But the soft ones slip by and I only notice them in retrospect, through a lens of "remember when things felt easy."</p>
+             <p>So I'm writing this one down while I'm still in it. While it's still warm. Today I felt light. Today things felt possible. Today I didn't have to try very hard to be okay.</p>
+             <p>That's worth recording. That's worth everything.</p>`
+    }
+  ];
+
+  // ══════════════════════════════════════════════════════════
+  //  ROUTING
+  // ══════════════════════════════════════════════════════════
+  let previousPage = 'home';
+
+  function navigate(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+    const el = document.getElementById('page-' + page);
+    el.classList.add('active');
+
+    const link = document.querySelector(`.nav-links a[data-page="${page}"]`);
+    if (link) link.classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    history.pushState({ page }, '', '#' + page);
+  }
+
+  function openPost(index, fromPage) {
+    previousPage = fromPage || 'home';
+    const post = posts[index];
+    if (!post) return;
+
+    document.getElementById('post-title').textContent = post.title;
+    document.getElementById('post-date').textContent = `${post.date} · ${post.time}`;
+
+    const tagEl = document.getElementById('post-tag');
+    tagEl.textContent = post.emotion;
+    tagEl.className = `emotion-tag tag-${post.emotion}`;
+
+    document.getElementById('post-body').innerHTML = post.body;
+
+    // Back button goes to where you came from
+    document.getElementById('post-back-btn').onclick = () => navigate(previousPage);
+
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-post').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  RENDER HOME
+  // ══════════════════════════════════════════════════════════
+  function renderHome() {
+    const latest = posts[0];
+    document.getElementById('feat-title').textContent = latest.title;
+    document.getElementById('feat-excerpt').textContent = latest.excerpt;
+    document.getElementById('feat-date').textContent = `${latest.date} · ${latest.time}`;
+    const ft = document.getElementById('feat-tag');
+    ft.textContent = latest.emotion;
+    ft.className = `emotion-tag tag-${latest.emotion}`;
+
+    const grid = document.getElementById('home-grid');
+    grid.innerHTML = '';
+    posts.slice(1, 5).forEach((post, i) => {
+      const div = document.createElement('div');
+      div.className = 'post-card-sm';
+      div.onclick = () => openPost(i + 1, 'home');
+      div.innerHTML = `
+        <div class="card-title">${post.title}</div>
+        <div class="card-excerpt">${post.excerpt}</div>
+        <div class="post-meta">
+          <span class="post-date">${post.date}</span>
+          <span class="emotion-tag tag-${post.emotion}">${post.emotion}</span>
+        </div>`;
+      grid.appendChild(div);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  RENDER ARCHIVE
+  // ══════════════════════════════════════════════════════════
+  let activeFilter = 'all';
+
+  function renderArchive(filter) {
+    activeFilter = filter || 'all';
+
+    // Build filter buttons
+    const emotions = [...new Set(posts.map(p => p.emotion))];
+    const bar = document.getElementById('filter-bar');
+    bar.innerHTML = '';
+    ['all', ...emotions].forEach(e => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn' + (activeFilter === e ? ' active' : '');
+      btn.textContent = e;
+      btn.onclick = () => renderArchive(e);
+      bar.appendChild(btn);
+    });
+
+    // Build list
+    const list = document.getElementById('archive-list');
+    list.innerHTML = '';
+    const filtered = activeFilter === 'all' ? posts : posts.filter(p => p.emotion === activeFilter);
+    filtered.forEach(post => {
+      const idx = posts.indexOf(post);
+      const li = document.createElement('li');
+      li.className = 'archive-item';
+      li.onclick = () => openPost(idx, 'archive');
+      li.innerHTML = `
+        <div>
+          <div class="archive-title">${post.title}</div>
+          <div class="archive-excerpt">${post.excerpt.substring(0, 90)}…</div>
+        </div>
+        <div class="archive-right">
+          <span class="post-date">${post.date}</span>
+          <span class="emotion-tag tag-${post.emotion}">${post.emotion}</span>
+        </div>`;
+      list.appendChild(li);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  INIT
+  // ══════════════════════════════════════════════════════════
+  renderHome();
+  renderArchive('all');
+
+  // Handle browser back/forward
+  window.addEventListener('popstate', (e) => {
+    if (e.state?.page) navigate(e.state.page);
+  });
+</script>
+</body>
+</html>
